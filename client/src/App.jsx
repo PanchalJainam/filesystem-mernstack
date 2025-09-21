@@ -8,23 +8,30 @@ import FolderGrid from "./components/FolderGrid/FolderGrid";
 import BinPage from "./pages/BinPage";
 import NotFound from "./pages/NotFound";
 import { Toaster } from "react-hot-toast";
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<Login />} />
-
-        {/* All routes with sidebar */}
+        {/* Public Routes */}
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
-          <Route path="/myfiles/:folderId" element={<FolderView />} />
-          <Route path="/myfiles" element={<FolderGrid />} />
-          <Route path="/bin" element={<BinPage />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="*" element={<NotFound />} />
         </Route>
+        <Route path="/login" element={<Login />} />
+
+        <Route element={<ProtectedRoute />}>
+          <Route element={<Layout />}>
+            <Route path="/myfiles/:folderId" element={<FolderView />} />
+            <Route path="/myfiles" element={<FolderGrid />} />
+            <Route path="/bin" element={<BinPage />} />
+            <Route path="/settings" element={<Settings />} />
+          </Route>
+        </Route>
+
+        <Route path="*" element={<NotFound />} />
       </Routes>
+
       <Toaster position="top-center" reverseOrder={false} />
     </BrowserRouter>
   );

@@ -10,6 +10,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [otp, setOtp] = useState(new Array(6).fill(""));
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const inputsRef = useRef([]);
@@ -17,18 +18,22 @@ const Login = () => {
   // Step 1: Login with email+password → backend sends OTP
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const res = await loginUser({ email, password });
-      toast.success(res.data.message || "OTP sent to your email ✅");
+      toast.success(res.data.message || "OTP sent to your email");
       setStep(2);
     } catch (err) {
-      toast.error(err.response?.data?.error || "Login failed ❌");
+      toast.error(err.response?.data?.error || "Login failed");
+    } finally {
+      setLoading(false);
     }
   };
 
   // Step 2: Verify OTP
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const otpString = otp.join("");
       const res = await verifyOtp({ email, otp: otpString });
@@ -37,10 +42,12 @@ const Login = () => {
       const userRes = await getUserDetails();
       dispatch(setUser({ ...userRes.data.user, token: res.data.token }));
 
-      toast.success("Login successful ✅");
+      toast.success("Login successful");
       navigate("/");
     } catch (err) {
-      toast.error(err.response?.data?.error || "OTP verification failed ❌");
+      toast.error(err.response?.data?.error || "OTP verification failed");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -120,12 +127,16 @@ const Login = () => {
                 required
               />
             </div>
-
             <button
               type="submit"
-              className="w-full py-2 bg-gray-700 text-white hover:bg-gray-800 rounded-lg transition"
+              disabled={loading}
+              className={`w-full py-2 rounded-lg transition ${
+                loading
+                  ? "bg-gray-400 text-white cursor-not-allowed"
+                  : "bg-gray-700 text-white hover:bg-gray-800"
+              }`}
             >
-              Continue
+              {loading ? "Please wait..." : "Continue"}
             </button>
           </form>
         )}
@@ -147,15 +158,20 @@ const Login = () => {
                     ref={(el) => (inputsRef.current[index] = el)}
                     onChange={(e) => handleOtpChange(e, index)}
                     onKeyDown={(e) => handleKeyDown(e, index)}
-                    className="w-12 h-12 text-center border rounded-lg text-xl focus:outline-none focus:ring-2 focus:ring-gray-700"
+                    className="w-10 h-12 sm:w-12 text-center border rounded-lg text-xl focus:outline-none focus:ring-2 focus:ring-gray-700"
                   />
                 ))}
               </div>
               <button
                 type="submit"
-                className="mt-6 w-full bg-gray-700 text-white hover:bg-gray-800 py-2 rounded-lg transition"
+                disabled={loading}
+                className={`mt-6 w-full py-2 rounded-lg transition ${
+                  loading
+                    ? "bg-gray-400 text-white cursor-not-allowed"
+                    : "bg-gray-700 text-white hover:bg-gray-800"
+                }`}
               >
-                Verify OTP
+                {loading ? "Verifying..." : "Verify OTP"}
               </button>
             </form>
           </div>

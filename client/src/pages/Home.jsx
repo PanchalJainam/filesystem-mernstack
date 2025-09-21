@@ -99,6 +99,15 @@ const Home = () => {
     setShowUploadModal(true);
   };
 
+  const handleCreateFolder = () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+    setShowFolderModal(true);
+  };
+
   return (
     <div className="flex h-screen">
       {/* Main Content */}
@@ -144,7 +153,7 @@ const Home = () => {
                   <button
                     className="w-full text-left text-sm px-4 py-2 hover:bg-[#F8FAFC]"
                     onClick={() => {
-                      setShowFolderModal(true); // ✅ Open CreateFolderModal
+                      handleCreateFolder(); // ✅ Open CreateFolderModal
                       setOpenPopup(false);
                     }}
                   >

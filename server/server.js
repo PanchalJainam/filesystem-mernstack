@@ -25,7 +25,7 @@ app.use(express.urlencoded({ limit: "500mb", extended: true }));
 app.use(morgan("dev"));
 app.use(
   cors({
-    origin: [process.env.FRONTEND_URL, "http://192.168.10.76:5173"],
+    origin: [process.env.FRONTEND_URL, "http://192.168.33.76:5173"],
     credentials: true,
   })
 );
